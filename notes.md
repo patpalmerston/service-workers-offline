@@ -34,3 +34,5 @@ is actually sit between your web app and the rest of the web.Every request wethe
 #1 task-
   - is to make the site reconize if the user is offline or not.
     - dev tools network: toggle online and offline
+#2 task
+  - set up for using a service worker
