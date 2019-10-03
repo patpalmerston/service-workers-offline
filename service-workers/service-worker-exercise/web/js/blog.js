@@ -41,7 +41,16 @@
 	async function initServiceWorker() {
 		// 2.5
 		swRegistration = await navigator.serviceWorker.register("/sw.js", {
-			updateViaCache: false
+			updateViaCache: "none"
 		})
+// 3.1 -- install is for brand new service worker, if one exists and you have a second one installed it enters the waiting cycle until the life cycle of the previous service worker is complete. Bouncing between waiting and active
+		 svcworker = swRegistration.installing || swRegistration.waiting || swRegistration.active
+
+		 navigator.serviceWorker.addEventListener("controllerchange", function onController() {
+			svcWorker = navigator.serviceWorker.controller;
+		 })
 	}
+
+
+
 })();
