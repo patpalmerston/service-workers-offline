@@ -19,5 +19,10 @@ async function onInstall() {
 }
 
 async function onActivate() {
-	console.log(`Service Worker (${version}) activated.`);
+  console.log(`Service Worker (${version}) activated.`);
+  evt.waitUntil(handleActivation());
+}
+
+async function handleActivation() {
+  
 }
