@@ -18,11 +18,11 @@ async function onInstall() {
 	self.skipWaiting();
 }
 
-async function onActivate() {
-  console.log(`Service Worker (${version}) activated.`);
-  evt.waitUntil(handleActivation());
+function onActivate() {
+	evt.waitUntil(handleActivation());
 }
 
 async function handleActivation() {
-  
+	await clients.claim();
+	console.log(`Service Worker (${version}) activated.`);
 }
