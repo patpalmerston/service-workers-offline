@@ -54,26 +54,28 @@
 		navigator.serviceWorker.addEventListener(
 			'controllerchange',
 			function onController() {
-				svcWorker = navigator.serviceWorker.controller;
-				sendStatusUpdate(svcworker)
+				svcworker = navigator.serviceWorker.controller;
+				sendStatusUpdate(svcworker);
 			}
 		);
-		navigator.serviceWorker.addEventListener("message", onSWMessage)
+		navigator.serviceWorker.addEventListener('message', onSWMessage);
 	}
 
 	function onSWMessage(evt) {
-		var {data} = evt;
-		if(data.requestStatusUpdate) {
-			console.log(`Received status update request from service worker, responding....`)
-			sendStatusUpdate(evt.ports && evt.ports[0])
+		var { data } = evt;
+		if (data.requestStatusUpdate) {
+			console.log(
+				`Received status update request from service worker, responding....`
+			);
+			sendStatusUpdate(evt.ports && evt.ports[0]);
 		}
 	}
 
 	function sendStatusUpdate(target) {
-		sendSWMessage({statusUpdate:{ isOnline, isLoggedIn}}, target)
+		sendSWMessage({ statusUpdate: { isOnline, isLoggedIn } }, target);
 	}
 
-	function sendSWMessage(target) {
+	function sendSWMessage(msg, target) {
 		if (target) {
 			target.postMessage(msg);
 		} else if (svcworker) {
