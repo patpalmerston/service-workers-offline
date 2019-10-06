@@ -61,12 +61,13 @@ function onMessage({ data }) {
 	}
 }
 
-function onFetch(evt) {
-	evt.waitUntil(router(evt.request));
-}
 
 function onActivate(evt) {
 	evt.waitUntil(handleActivation());
+}
+
+function onFetch(evt) {
+	evt.respondWith(router(evt.request));
 }
 
 async function router(req) {
@@ -74,7 +75,29 @@ async function router(req) {
 	var reqURL = url.pathname;
 	var cache = await caches.open(cacheName);
 
-	
+	if(url.origin == location.origin) {
+		let res;
+		try {
+			let fetchOption = {
+				method: req.method,
+				headers: req.headers,
+				credentials: "omit",
+				cache: "no-store"
+			}
+			let res = await fetch(req.url, fetchOptions)
+			if(res && res.ok) {
+				await cache.put(reqURL, res.clone())
+				return res
+			}
+		}
+		catch(err) {
+			res = await cache.match(reqURL)
+			if(res) {
+				return res.clone()
+			}
+		}
+	}
+	// TODO: figure out CORS requests
 }
 
 async function handleActivation() {
