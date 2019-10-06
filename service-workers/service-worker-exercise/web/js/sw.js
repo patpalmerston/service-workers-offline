@@ -67,3 +67,34 @@ async function handleActivation() {
 	await clients.claim();
 	console.log(`Service Worker (${version}) activated.`);
 }
+
+async function cacheLoggedOutFiles(forceReload = false) {
+	var cache = await caches.match(cacheName)
+
+	return Promise.all(
+		urlsToCache.loggedOut.map(function requestFile(url) {
+			try {
+				let res;
+				if(!forceReload) {
+					res = await cache.match(url)
+					if(res) {
+						return res;
+					}
+				}
+
+				let fetchOptions = {
+					method: "GET",
+					cache: "no-cache",
+					credentials: "omit"
+				}
+				res = await fetch(url, fetchOptions);
+				if(res.ok) {
+					await cache.put(url, res)
+				}
+			}
+			catch (err) {
+
+			}
+		})
+	)
+}
