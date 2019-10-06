@@ -25,6 +25,7 @@ var urlsToCache = {
 self.addEventListener('install', onInstall);
 self.addEventListener('activate', onActivate);
 self.addEventListener('message', onMessage);
+self.addEventListener('fetch', onFetch)
 
 main().catch(console.error);
 
@@ -60,8 +61,20 @@ function onMessage({ data }) {
 	}
 }
 
+function onFetch(evt) {
+	evt.waitUntil(router(evt.request));
+}
+
 function onActivate(evt) {
 	evt.waitUntil(handleActivation());
+}
+
+async function router(req) {
+	var url = URL(req.url);
+	var reqURL = url.pathname;
+	var cache = await caches.open(cacheName);
+
+	
 }
 
 async function handleActivation() {
