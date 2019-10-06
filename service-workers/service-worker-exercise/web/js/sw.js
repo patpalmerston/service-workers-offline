@@ -1,6 +1,6 @@
 'use strict';
 
-const version = 3;
+var version = 4;
 var isOnline = true;
 var isLoggedIn = false;
 var cacheName = `ramblings-${version}`;
@@ -12,7 +12,7 @@ var urlsToCache = {
 		"/contact",
 		"/404",
 		"/offline",
-		"/css/styles.css",
+		"/css/style.css",
 		"/js/blog.js",
 		"/js/home.js",
 		"/js/login.js",
@@ -32,6 +32,7 @@ main().catch(console.error);
 
 async function main() {
 	await sendMessage({ requestStatusUpdate: true });
+	await cacheLoggedOutFiles()
 }
 
 async function onInstall() {
@@ -64,12 +65,33 @@ function onActivate(evt) {
 }
 
 async function handleActivation() {
+	await clearCaches()
+	await cacheLoggedOutFiles(/*forceReload*/true)
 	await clients.claim();
 	console.log(`Service Worker (${version}) activated.`);
 }
 
+async function clearCaches() {
+	var cacheNames = await caches.keys();
+	var oldCacheNames = cacheNames.filter(function matchOldCache(cacheName) {
+		if(/^ramblings-\d+$/.test(cacheName)) {
+			let [,cacheVersion] = cacheName.match(/^ramblings-(\d+)$/)
+			cacheVersion = (cacheVersion != null ) ? Number(cacheVersion) : cacheVersion
+			return (
+				cacheVersion > 0 &&
+				cacheVersion != version
+			)
+		}
+	})
+	return Promise.all(
+		oldCacheNames.map(function deleteCache(cacheName) {
+			return caches.delete(cacheName);
+		})
+	)
+}
+
 async function cacheLoggedOutFiles(forceReload = false) {
-	var cache = await caches.match(cacheName)
+	var cache = await caches.open(cacheName)
 
 	return Promise.all(
 		urlsToCache.loggedOut.map(function requestFile(url) {
