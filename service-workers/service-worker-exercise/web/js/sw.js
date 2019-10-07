@@ -1,6 +1,6 @@
 'use strict';
 
-var version = 4;
+var version = 5;
 var isOnline = true;
 var isLoggedIn = false;
 var cacheName = `ramblings-${version}`;
@@ -71,7 +71,7 @@ function onFetch(evt) {
 }
 
 async function router(req) {
-	var url = URL(req.url);
+	var url = new URL(req.url);
 	var reqURL = url.pathname;
 	var cache = await caches.open(cacheName);
 
